@@ -627,7 +627,7 @@ example.length; // 5 -- and not 4 as one might expect.</pre>
 						<p class="to-build">One should not compare decimal numbers without first rounding them. Otherwise, the result cannot be guaranteed.
 						The reason is because these numbers are stored and processed as binary data which is in base-2, and not in base-10.
 						Certain decimal numbers cannot be precisely represented in base-2 causing some loss of precision.</p>
-						<pre>Math.floor((0.1 + 0.2) * 10) / 10 == 0.3; // true</pre>
+						<pre>Math.round((0.1 + 0.2) * 10) / 10 == 0.3; // true</pre>
 					</div>
 				</section>
 			</div>
