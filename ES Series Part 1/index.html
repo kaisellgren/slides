@@ -1,0 +1,1170 @@
+<!DOCTYPE html> 
+<!--
+	Copyright 2010 Google Inc.
+ 
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+ 
+		 http://www.apache.org/licenses/LICENSE-2.0
+ 
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+ 
+	Original slides: Marcin Wichary (mwichary@google.com)
+	Modifications: Chrome Developer Relations <chrome-devrel@googlegroups.com>
+-->
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
+	<title>HTML5 presentation</title>
+	<link href="http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono" rel="stylesheet" type="text/css" />
+	<style>
+		body {
+			font: 20px "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+			padding: 0;
+			margin: 0;
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			left: 0px; top: 0px;
+		}
+
+		[data-build] > .to-build {
+			opacity: 0;
+		}
+
+		table, th, td {
+			border: 1px solid #666;
+			border-collapse: collapse;
+		}
+
+		th, td {
+			padding: 4px;
+		}
+
+		h1.title {
+			font-size: 64px;
+		}
+
+		.presentation {
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			left: 0px;
+			top: 0px;
+			display: block;
+			overflow: hidden;
+			background: url('background.jpg');
+		}
+
+		.slides {
+			width: 100%;
+			height: 100%;
+			left: 0;
+			top: 0;
+			position: absolute;
+			display: block;
+			-webkit-transition: -webkit-transform 1s ease-in-out;
+			-moz-transition: -moz-transform 1s ease-in-out;
+			-o-transition: -o-transform 1s ease-in-out;
+			transition: transform 1s ease-in-out;
+		}
+
+		.slide {
+			display: none;
+			position: absolute;
+			overflow: hidden;
+			width: 900px;
+			height: 750px;
+			left: 50%;
+			top: 50%;
+			margin-top: -375px;
+			opacity: 0.15;
+			background: radial-gradient(center center , #FFFFFF, rgba(255, 255, 255, 0.4)) repeat scroll 0 0 transparent;
+			background: -moz-radial-gradient(center center , #FFFFFF, rgba(255, 255, 255, 0.4)) repeat scroll 0 0 transparent;
+			background: -webkit-radial-gradient(center center , #FFFFFF, rgba(255, 255, 255, 0.4)) repeat scroll 0 0 transparent;
+			-webkit-transition: all 0.25s ease-in-out;
+			-moz-transition: all 0.25s ease-in-out;
+			-o-transition: all 0.25s ease-in-out;
+			transition: all 0.25s ease-in-out;
+		}
+
+		.slide:nth-child(even) {
+			border-radius: 20px;
+			-moz-border-radius: 20px;
+			-webkit-border-radius: 20px;
+		}
+
+		.slide:nth-child(odd) {
+			border-radius: 20px;
+			-moz-border-radius: 20px;
+			-webkit-border-radius: 20px;
+		}
+
+		.slide p, .slide textarea {
+			font-size: 120%;
+		}
+
+		.slide .counter {
+			color: #999999;
+			position: absolute;
+			left: 20px;
+			bottom: 20px;
+			display: block;
+			font-size: 70%;
+		}
+
+		.slide.title > .counter,
+		.slide.segue > .counter,
+		.slide.mainTitle > .counter {
+			display: none;
+		}
+
+		.force-render {
+			display: block;
+			visibility: hidden;
+		}
+
+		.slide.far-past {
+			display: block;
+			margin-left: -2400px;
+		}
+
+		.slide.past {
+			visibility: visible;
+			display: block;
+			margin-left: -1400px;
+		}
+
+		.slide.current {
+			opacity: 1;
+			visibility: visible;
+			display: block;
+			margin-left: -450px;
+			box-shadow: 0 0 10px black;
+			-moz-box-shadow: 0 0 10px black;
+			-webkit-box-shadow: 0 0 10px black;
+		}
+
+		.slide.future {
+			visibility: visible;
+			display: block;
+			margin-left: 500px;
+		}
+
+		.slide.far-future {
+			display: block;
+			margin-left: 1500px;
+		}
+
+		body.three-d div.slides {
+			-webkit-transform: translateX(50px) scale(0.8) rotateY(10deg);
+			-moz-transform: translateX(50px) scale(0.8) rotateY(10deg);
+			-o-transform: translateX(50px) scale(0.8) rotateY(10deg);
+			transform: translateX(50px) scale(0.8) rotateY(10deg);
+		}
+
+		/* Content */
+
+		@font-face { font-family: 'Junction'; src: url(src/Junction02.otf); }
+		@font-face { font-family: 'LeagueGothic'; src: url(src/LeagueGothic.otf); }
+
+		header {
+			font-family: 'Droid Sans';
+			font-weight: normal;
+			letter-spacing: -.05em;
+			text-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+			left: 30px;
+			top: 25px;
+			margin: 0;
+			padding: 0;
+			font-size: 140%;
+		}
+
+		h1 {
+			font-size: 140%;
+			display: inline;
+			font-weight: normal;
+			padding: 0;
+			margin: 0;
+		}
+
+		h2 {
+			font-family: 'Droid Sans';
+			color: black;
+			font-size: 120%;
+			padding: 0;
+			margin: 20px 0;
+		}
+
+		h2:first-child {
+			margin-top: 0;
+		}
+
+		section, footer {
+			font-family: 'Droid Sans';
+			color: #3f3f3f;
+			text-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+			margin: 100px 30px 0;
+			display: block;
+			overflow: hidden;
+		}
+
+		footer {
+			font-size: 100%;
+			margin: 20px 0 0 30px;
+		}
+
+		a {
+			color: inherit;
+			display: inline-block;
+			text-decoration: none;
+			line-height: 110%;
+			border-bottom: 2px solid #3f3f3f;
+		}
+
+		ul {
+			margin: 0;
+			/*padding: 0;*/
+		}
+
+		button {
+			font-size: 100%;
+		}
+
+		pre button {
+			margin: 2px;
+		}
+
+		section.left {
+			float: left;
+			width: 390px;
+		}
+
+		section.small {
+			font-size: 24px;
+		}
+
+		section.small ul {
+			margin: 0 0 0 15px;
+			padding: 0;
+		}
+
+		section.small li {
+			padding-bottom: 0;
+		}
+
+		section.middle {
+			line-height: 2em;
+			text-align: center;
+			display: table-cell;
+			vertical-align: middle;
+			height: 750px;
+			width: 900px;
+		}
+
+		pre {
+			text-align: left;
+			font-family: 'Droid Sans Mono', Courier;
+			font-size: 80%;
+			padding: 10px 20px;
+			background: rgba(255, 0, 0, 0.05);
+			-webkit-border-radius: 8px;
+			-khtml-border-radius: 8px;
+			-moz-border-radius: 8px;
+			border-radius: 8px;
+			border: 1px solid rgba(255, 0, 0, 0.2);
+		}
+
+		pre select {
+			font-family: Monaco, Courier;
+			border: 1px solid #c61800;
+		}
+
+		input {
+			font-size: 100%;
+			margin-right: 10px;
+			font-family: Helvetica;
+			padding: 3px;
+		}
+		input[type="range"] {
+			width: 100%;
+		}
+
+		button {
+			margin: 20px 10px 0 0;
+			font-family: Verdana;
+		}
+
+		button.large {
+			font-size: 32px;
+		}
+
+		pre b {
+			font-weight: normal;
+			color: #c61800;
+			text-shadow: #c61800 0 0 1px;
+			/*letter-spacing: -1px;*/
+		}
+		pre em {
+			font-weight: normal;
+			font-style: normal;
+			color: #18a600;
+			text-shadow: #18a600 0 0 1px;
+		}
+		pre input[type="range"] {
+			height: 6px;
+			cursor: pointer;
+			width: auto;
+		}
+
+		div.example {
+			display: block;
+			padding: 10px 20px;
+			color: black;
+			background: rgba(255, 255, 255, 0.4);
+			-webkit-border-radius: 8px;
+			-khtml-border-radius: 8px;
+			-moz-border-radius: 8px;
+			border-radius: 8px;
+			margin-bottom: 10px;
+			border: 1px solid rgba(0, 0, 0, 0.2);
+		}
+
+		video {
+			-moz-border-radius: 8px;
+			-khtml-border-radius: 8px;
+			-webkit-border-radius: 8px;
+			border-radius: 8px;
+			border: 1px solid rgba(0, 0, 0, 0.2);
+		}
+
+		.key {
+			font-family: 'Droid Sans';
+			color: black;
+			display: inline-block;
+			padding: 6px 10px 3px 10px;
+			font-size: 100%;
+			line-height: 30px;
+			text-shadow: none;
+			letter-spacing: 0;
+			bottom: 10px;
+			position: relative;
+			-moz-border-radius: 10px;
+			-khtml-border-radius: 10px;
+			-webkit-border-radius: 10px;
+			border-radius: 10px;
+			background: white;
+			box-shadow: rgba(0, 0, 0, 0.1) 0 2px 5px;
+			-webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 2px 5px;
+			-moz-box-shadow: rgba(0, 0, 0, 0.1) 0 2px 5px;
+			-o-box-shadow: rgba(0, 0, 0, 0.1) 0 2px 5px;
+		}
+
+		.key { font-family: Arial; }
+
+		:not(header) > .key {
+			margin: 0 5px;
+			bottom: 4px;
+		}
+
+		.two-column {
+			-webkit-column-count: 2;
+			-moz-column-count: 2;
+			column-count: 2;
+		}
+
+		.stroke {
+			-webkit-text-stroke-color: red;
+			-webkit-text-stroke-width: 1px;
+		} /* currently webkit-only */
+
+		.center {
+			text-align: center;
+		}
+
+		#presentation-counter {
+			color: #ccc;
+			font-size: 70%;
+			letter-spacing: 1px;
+			position: absolute;
+			top: 40%;
+			left: 0;
+			width: 100%;
+			text-align: center;
+		}
+
+		div:not(.current).reduced {
+			-webkit-transform: scale(0.8);
+			-moz-transform: scale(0.8);
+			-o-transform: scale(0.8);
+			transform: scale(0.8);
+		}
+
+		.no-transitions {
+			-webkit-transition: none;
+			-moz-transition: none;
+			-o-transition: none;
+			transition: none;
+		}
+
+		.no-gradients {
+			background: none;
+			background-color: #fff;
+		}
+
+		ul.bulleted {
+			padding-left: 30px;
+		}
+
+		.inner-shadow {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			box-shadow: 0 0 32px black inset;
+			-moz-box-shadow: 0 0 32px black inset;
+			-webkit-box-shadow: 0 0 32px black inset;
+			z-index: 1;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="inner-shadow"></div>
+
+	<div class="presentation">
+		<div id="presentation-counter"></div>
+		<div class="slides">
+			<div class="slide">
+				<section class="middle">
+					<h1 class="title">ECMAScript Series<br /><br />Part 1: Basics</h1>
+					<p>by Kai Sellgren</p>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>History</h2>
+					<div data-build="data-build">
+						<p>Brendan Eich, who worked for Netscape, worked on JavaScript under the name Mocha, soon renamed to LiveScript.</p>
+						<p>Later on, Netscape told Eich to make LiveScript be like Java. LiveScript was renamed to JavaScript and received a Java/C-like syntax. This move was part of Netscape's and Sun Microsystems' co-marketing and development alliance deal.</p>
+						<p>JavaScript and Java are separate programming languages and should not be used interchangeably.</p>
+						<p>Sun Microsystems trademarked JavaScript (#2416017) in 31th August 2000 (registration date). Oracle acquired Sun in 2009 and thus JavaScript trademark is currently owned by the Oracle corporation.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>History con't.</h2>
+					<div data-build="data-build">
+						<p>Thus far, Sun Microsystems and Oracle have been benevolent about JavaScript trademark.</p>
+						<p>The first edition of ECMAScript standard was released in June 1997 by Ecma International. It was named ECMAScript, because JavaScript was trademarked and could not be used. The same reason made Microsoft to use the term JScript.</p>
+						<p>Later the second and third editions were published. Fourth edition never arrived, because parties argued over the language and because Ecma International did not believe the language to have a future. The fourth edition was abandoned after Adobe decided to use it for Flash.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Today</h2>
+					<div data-build="data-build">
+						<p>All JavaScript engines within web browsers are based on either ECMAScript 3rd or 5th edition, or something between the two.</p>
+						<p>There is a 6th edition of ECMAScript under work, known as "Harmony", which adds a bunch of both functionality and syntactic sugar to the language. The release date is unknown.</p>
+						<p>We will mostly concentrate on ECMAScript 3rd and 5th editions.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>So what is ECMAScript?</h2>
+					<div data-build="data-build">
+						<p>ECMAScript is a <em>standardized language</em>.</p>
+						<p>It emphasises on object-oriented, functional, imperative, structured and dynamic programming concepts.</p>
+						<div>
+							<p>There are several ECMAScript dialectics:</p>
+							<ul>
+								<li>JavaScript (web browsers, NodeJS, Adobe Creative Suite, ...)</li>
+								<li>JScript (older IEs, Windows Scripting Host)</li>
+								<li>ActionScript (Adobe Flash, Adobe Flex)</li>
+								<li>AppleScript </li>
+								<li>EJScript</li>
+								<li>DMDScript</li>
+								<li>CriScript</li>
+								<li>InScript</li>
+								<li>QtScript (Nokia's UI framework)</li>
+								<li>Objective-J (Cappucino)</li>
+								<li>...</li>
+							</ul>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>ECMAScript is a language, not an implementation</h2>
+					<p>JavaScript and similar ECMAScript-based language implementations may vary a lot.</p>
+					<p>For example, ActionScript is based on ES4 where JavaScript engines are either ES3 or ES5 based.</p>
+					<p>ActionScript, therefore, has packages and type hinting among other things that JavaScript does not have. And vice-versa.</p>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Most basic rules</h2>
+					<ul data-build="data-build">
+						<li>Every statement ends with a semicolon <code>;</code><pre>5 + 5;</pre>
+							If you don't use it, it will be placed for you, sometimes in ways you didn't expect it to.</li>
+						<li>Whitespace does not affect the behavior of the application.</li>
+						<li>Source code comments are similar to many other languages. One-line comments start with <code>//</code> notation,
+							multi-line comments are surrounded by <code>/*</code> and <code>*/</code> respectively.
+						<pre>// This is a single-line comment.
+5 + 5;
+/*
+ This is a multi-line comment.
+*/</pre></li>
+					</ul>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Primitives data types</h2>
+					<p>There are six different primitive data types.</p>
+					<ul>
+						<li><code>undefined</code></li>
+						<li><code>null</code></li>
+						<li><code>string</code></li>
+						<li><code>number</code></li>
+						<li><code>boolean</code></li>
+						<li><code>object</code></li>
+					</ul>
+					<pre>var foo = undefined;
+var empty = null;
+var text = "string";
+var age = 35;
+var hungry = true;
+var someObject = {};</pre>
+					<p>Most "things" like arrays, regular expressions and functions are based on objects.</p>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>String primitive type</h2>
+					<div data-build="data-build">
+						<div>
+							<p>String is a set of ordered sequences of zero or more 16-bit unsigned integer values referred to as "elements".
+							This means that strings are capable of storing and processing Unicode (UTF-16) letters.</p>
+							<pre>
+var foo = "bܓa";
+foo[1]; // ܓ</pre>
+						</div>
+						<div>
+							<p>Individual elements in string can be accessed using the <code>[]</code>-notation. Index of each element is non-negative, beginning from 0.</p>
+						</div>
+						<div>
+							<p>Due to use of UTF-16, strings consume two bytes of memory per characters in the Basic Multilingual Plane excluding the size that is needed for the null terminator and header data.
+							Some implementations may use some sort of compression, however, so there is no definite answer to how much RAM a string really consumes.</p>
+						</div>
+						<div>
+							<p>Strings come with methods such as <code>slice</code>, <code>toUpperCase</code>, <code>charAt</code>, etc. which are all part of <code>String.prototype</code>-object.
+							Modifying <code>String.prototype</code> will affect strings. Doing that is discouraged.</p>
+						</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Strings con't.</h2>
+					<div data-build="data-build">
+						<p>Since strings are encoded in UTF-16, every character in the Basic Multilingual Plane consume 2 bytes.
+						Characters outside of the BMP consume 4 bytes. This is because one <em>code unit</em> is used for the BMP
+						and another is used for anything outside of the BMP. Each <em>code unit</em> takes up 2 bytes (16-bits) as the name UTF-16 implies.</p>
+						<div>
+							<p>Knowing this, it becomes easy to understand how the <code>length</code> property of strings in ECMAScript works. It returns the
+							number of <em>code units</em> the string contains.</p>
+							<pre>
+var example = "abc𝛴";
+example.length; // 5 -- and not 4 as one might expect.</pre>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Boolean, Null, Undefined</h2>
+					<h3>Boolean</h3>
+					<p>The Boolean type represents a logical entity having two values, called <code>true</code> and <code>false</code>.</p>
+					<h3>Null</h3>
+					<p>The Null type has exactly one value, called <code>null</code>. This is often used to implicitly mark something to not
+					have a value.</p>
+					<h3>Undefined</h3>
+					<p>The Undefined type has exactly one value, called <code>undefined</code>. Any variable that has not been assigned a value
+					has the value undefined.</p>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Number primitive type</h2>
+					<div data-build="data-build">
+						<p>There is no concept of integers or floats, only <em>numbers</em>. Numbers in ECMAScript are stored as IEEE-754 64-bit double precision floating-point numbers.
+						Numbers can be written in either octal, decimal or hexadecimal notation.</p>
+						<p class="to-build">Whole numbers are considered reliable up to a little over 15 digits (9e15). Using greater whole numbers is discouraged.</p>
+						<p>Like with many other languages, comparing a result of an expression using floating-point arithmetic can be problematic:</p>
+						<pre>0.1 + 0.2 == 0.3; // false!</pre>
+						<p class="to-build">One should not compare decimal numbers without first rounding them. Otherwise, the result cannot be guaranteed.
+						The reason is because these numbers are stored and processed as binary data which is in base-2, and not in base-10.
+						Certain decimal numbers cannot be precisely represented in base-2 causing some loss of precision.</p>
+						<pre>Math.floor((0.1 + 0.2) * 10) / 10 == 0.3; // true</pre>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Infinity</h2>
+					<div data-build="data-build">
+						<p>ECMAScript has this special number called <code>Infinity</code>. It can be either negative or positive.</p>
+						<div>
+							<p>When a number becomes extremely large, the result is Infinity:</p>
+							<pre>1e308; // 1e+308
+1e309; // Infinity</pre>
+						</div>
+						<div>
+							<p>Another scenario when Infinity arises is when you divide by zero:</p>
+							<pre>10 / 0; // Infinity</pre></div>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Octal and hexadecimal numbers</h2>
+					<div data-build="data-build">
+						<p>Numbers can also be written in octal or hexadecimal notation.</p>
+						<div>
+							<p>Be careful not to precede a number with a leading zero:</p>
+							<pre>010 === 10; // false, 010 equals to 8 in base 10.</pre>
+						</div>
+						<div>
+							<p>Hexadecimal numbers are written with their usual <code>0x</code> prefix:</p>
+							<pre>0x0F === 15; // true</pre></div>
+						<div>
+							<p>You may use <code>Number.prototype.toString(base)</code> to convert a number from one base to another:</p>
+							<pre>(256 * 256 * 256 - 1).toString(16); // "FFFFFF"</pre></div>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>NaN ("Not-a-Number")</h2>
+					<div data-build="data-build">
+						<div>
+							<p><code>NaN</code> is a special number in ECMAScript. Its type is <code>number</code>:</p>
+							<pre>typeof NaN; // "number"</pre>
+							<p>Even though the type of <code>NaN</code> is <code>number</code>, the name stands for <em>Not-a-Number</em>.</p>
+						</div>
+						<div>
+							<p>This special number is the result of an expression where arithmetic operation(s) have failed:</p>
+							<pre>10 / "test"; // NaN</pre>
+							<p>When comparing against <code>NaN</code>, do not use the equals-operator, instead use <code>isNaN()</code> function.</p>
+							<pre>isNaN(10 / "test"); // true</pre>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Operators</h2>
+					<div data-build="data-build">
+						<div>
+							<h3>Arithmetic operators</h3>
+							<p>These operators should be fairly familiar from any math courses you have ever been to.</p>
+							<pre>
+6 + 3; // 9
+6 - 3; // 3
+6 * 3; // 18
+6 / 3; // 2
+6 % 3; // 0
+
+var value = 6;
+--value; // 5
+++value; // 6
+value--; // 6
+value++; // 5</pre>
+						</div>
+						<div>
+							<p>The plus sign <code>+</code> is also used to concatenate strings.</p>
+							<pre>5 + "5"; // "55";
+5 - "5"; // 0</pre>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Comparison operators</h2>
+					<pre>
+5 == "5"; // true
+false == 0; // true
+false == []; // true
+false === []; // false
+false != []; // false
+false !== []; // true
+5 < "6"; // true
+!false; // true
+!!0; // false</pre>
+					<div>
+						<p>Be careful using non-strict equal operator. The difference between strict (<code>===</code>) and non-strict (<code>==</code>) equal operators
+						is that strict makes sure the types of both operands are the same.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Logical operators</h2>
+					<div data-build>
+						<div>
+							<p>There are three types of logical operators: or (<code>||</code>), and (<code>&&</code>), not (<code>!</code>).</p>
+							<pre>5 < 1 || 6 > 3; // true
+2 === 2 && 3 === 2; // false
+2 !== 3; // true</pre>
+						</div>
+						<div>
+							<p>Logical operators can be handy when assigning values. However, it may first look confusing.</p>
+							<pre>var name = someValue || "Jack";</pre>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Type detection</h2>
+					<div data-build>
+						<div>
+							<p>Type detection in ECMAScript is not always very straight-forward. Here is a quick summary of the results the <code>typeof</code>-operator returns.</p>
+							<pre>
+typeof 5.2;           // "number"
+typeof "test";        // "string"
+typeof false;         // "boolean"
+typeof undefined;     // "undefined"
+typeof Array;         // "object"
+typeof [1, 2, 3];     // "object"
+typeof null;          // "object"
+typeof function() {}; // "function"</pre>
+						</div>
+						<div>
+							<p>Testing whether something is an array or a function is not convenient without a library. The following examples demonstrate that.</p>
+							<pre>
+if (Object.prototype.toString.call([1, 2, 3]) === "[object Array]") {
+	// It's an array!
+}
+
+if (Object.prototype.toString.call(function() {}) === "[object Function]") {
+	// It's a function!
+}</pre>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Type detection con't.</h2>
+					<div data-build>
+						<div>
+							<p>Other ways to test for an array or a function.</p>
+							<pre>
+jQuery.isArray(); // Requires jQuery
+jQuery.isFunction(); // Requires jQuery
+Array.isArray(); // Requires ECMAScript 5</pre>
+						</div>
+						<div>
+							<p>Null checks are far easier, but you just have to remember to not use the <code>typeof</code> operator to check against null values.</p>
+							<pre>
+var foo = null;
+if (foo === null) {
+	// It's null
+}</pre>
+							<p>Remember to use three equal signs for a strict comparison.</p>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<!-- Var declarations, func declarations, arrays? -->
+
+			<div class="slide">
+				<section class="middle">
+					<h1>Questions?</h1>
+				</section>
+			</div>
+
+		</div> <!-- slides -->
+
+	</div> <!-- presentation -->
+
+	<script>
+		(function() {
+			var doc = document;
+			var disableBuilds = false;
+
+			var ctr = 0;
+			var spaces = /\s+/, a1 = [''];
+
+			var toArray = function(list) {
+				return Array.prototype.slice.call(list || [], 0);
+			};
+
+			var byId = function(id) {
+				if (typeof id == 'string') { return doc.getElementById(id); }
+				return id;
+			};
+
+			var query = function(query, root) {
+				if (!query) { return []; }
+				if (typeof query != 'string') { return toArray(query); }
+				if (typeof root == 'string') {
+					root = byId(root);
+					if(!root){ return []; }
+				}
+
+				root = root || document;
+				var rootIsDoc = (root.nodeType == 9);
+				var doc = rootIsDoc ? root : (root.ownerDocument || document);
+
+				// rewrite the query to be ID rooted
+				if (!rootIsDoc || ('>~+'.indexOf(query.charAt(0)) >= 0)) {
+					root.id = root.id || ('qUnique' + (ctr++));
+					query = '#' + root.id + ' ' + query;
+				}
+				// don't choke on something like ".yada.yada >"
+				if ('>~+'.indexOf(query.slice(-1)) >= 0) { query += ' *'; }
+
+				return toArray(doc.querySelectorAll(query));
+			};
+
+			var strToArray = function(s) {
+				if (typeof s == 'string' || s instanceof String) {
+					if (s.indexOf(' ') < 0) {
+						a1[0] = s;
+						return a1;
+					} else {
+						return s.split(spaces);
+					}
+				}
+				return s;
+			};
+
+			var addClass = function(node, classStr) {
+				classStr = strToArray(classStr);
+				var cls = ' ' + node.className + ' ';
+				for (var i = 0, len = classStr.length, c; i < len; ++i) {
+					c = classStr[i];
+					if (c && cls.indexOf(' ' + c + ' ') < 0) {
+						cls += c + ' ';
+					}
+				}
+				node.className = cls.trim();
+			};
+
+			var removeClass = function(node, classStr) {
+				var cls;
+				if (classStr !== undefined) {
+					classStr = strToArray(classStr);
+					cls = ' ' + node.className + ' ';
+					for (var i = 0, len = classStr.length; i < len; ++i) {
+						cls = cls.replace(' ' + classStr[i] + ' ', ' ');
+					}
+					cls = cls.trim();
+				} else {
+					cls = '';
+				}
+				if (node.className != cls) {
+					node.className = cls;
+				}
+			};
+
+			var toggleClass = function(node, classStr) {
+				var cls = ' ' + node.className + ' ';
+				if (cls.indexOf(' ' + classStr.trim() + ' ') >= 0) {
+					removeClass(node, classStr);
+				} else {
+					addClass(node, classStr);
+				}
+			};
+
+			var ua = navigator.userAgent;
+			var isFF = parseFloat(ua.split('Firefox/')[1]) || undefined;
+			var isWK = parseFloat(ua.split('WebKit/')[1]) || undefined;
+			var isOpera = parseFloat(ua.split('Opera/')[1]) || undefined;
+
+			var canTransition = (function() {
+				var ver = parseFloat(ua.split('Version/')[1]) || undefined;
+				// test to determine if this browser can handle CSS transitions.
+				var cachedCanTransition =
+					(isWK || (isFF && isFF > 3.6 ) || (isOpera && ver >= 10.5));
+				return function() { return cachedCanTransition; }
+			})();
+
+			//
+			// Slide class
+			//
+			var Slide = function(node, idx) {
+				this._node = node;
+				if (idx >= 0) {
+					this._count = idx + 1;
+				}
+				if (this._node) {
+					addClass(this._node, 'slide distant-slide');
+				}
+				this._makeCounter();
+				this._makeBuildList();
+			};
+
+			Slide.prototype = {
+				_node: null,
+				_count: 0,
+				_buildList: [],
+				_visited: false,
+				_currentState: '',
+				_states: [ 'distant-slide', 'far-past',
+									 'past', 'current', 'future',
+									 'far-future', 'distant-slide' ],
+				setState: function(state) {
+					if (typeof state != 'string') {
+						state = this._states[state];
+					}
+					if (state == 'current' && !this._visited) {
+						this._visited = true;
+						this._makeBuildList();
+					}
+					removeClass(this._node, this._states);
+					addClass(this._node, state);
+					this._currentState = state;
+
+					// delay first auto run. Really wish this were in CSS.
+					/*
+					this._runAutos();
+					*/
+					var _t = this;
+					setTimeout(function(){ _t._runAutos(); } , 400);
+				},
+				_makeCounter: function() {
+					if(!this._count || !this._node) { return; }
+					var c = doc.createElement('span');
+					c.innerHTML = this._count;
+					c.className = 'counter';
+					this._node.appendChild(c);
+				},
+				_makeBuildList: function() {
+					this._buildList = [];
+					if (disableBuilds) { return; }
+					if (this._node) {
+						this._buildList = query('[data-build] > *', this._node);
+					}
+					this._buildList.forEach(function(el) {
+						addClass(el, 'to-build');
+					});
+				},
+				_runAutos: function() {
+					if (this._currentState != 'current') {
+						return;
+					}
+					// find the next auto, slice it out of the list, and run it
+					var idx = -1;
+					this._buildList.some(function(n, i) {
+						if (n.hasAttribute('data-auto')) {
+							idx = i;
+							return true;
+						}
+						return false;
+					});
+					if (idx >= 0) {
+						var elem = this._buildList.splice(idx, 1)[0];
+						var transitionEnd = isWK ? 'webkitTransitionEnd' : (isFF ? 'mozTransitionEnd' : 'oTransitionEnd');
+						var _t = this;
+						if (canTransition()) {
+							var l = function(evt) {
+								elem.parentNode.removeEventListener(transitionEnd, l, false);
+								_t._runAutos();
+							};
+							elem.parentNode.addEventListener(transitionEnd, l, false);
+							removeClass(elem, 'to-build');
+						} else {
+							setTimeout(function() {
+								removeClass(elem, 'to-build');
+								_t._runAutos();
+							}, 400);
+						}
+					}
+				},
+				buildNext: function() {
+					if (!this._buildList.length) {
+						return false;
+					}
+
+					removeClass(this._buildList.shift(), 'to-build');
+					return true;
+				}
+			};
+
+			//
+			// SlideShow class
+			//
+			var SlideShow = function(slides) {
+				this._slides = (slides || []).map(function(el, idx) {
+					return new Slide(el, idx);
+				});
+
+				var h = window.location.hash;
+				try {
+					this.current = parseInt(h.split('#slide')[1], 10);
+				}catch (e) { /* squeltch */ }
+				this.current = isNaN(this.current) ? 1 : this.current;
+
+				var _t = this;
+				doc.addEventListener('keydown',
+						function(e) { _t.handleKeys(e); }, false);
+				doc.addEventListener('mousewheel',
+						function(e) { _t.handleWheel(e); }, false);
+				doc.addEventListener('DOMMouseScroll',
+						function(e) { _t.handleWheel(e); }, false);
+				doc.addEventListener('touchstart',
+						function(e) { _t.handleTouchStart(e); }, false);
+				doc.addEventListener('touchend',
+						function(e) { _t.handleTouchEnd(e); }, false);
+				window.addEventListener('popstate',
+						function(e) { _t.go(e.state); }, false);
+				this._update();
+			};
+
+			SlideShow.prototype = {
+				_slides: [],
+				_update: function(dontPush) {
+
+					// catch to set things right on the initial load. popstate fires on pageload.
+					if (this.current === null) return;
+
+					document.querySelector('#presentation-counter').innerText = this.current;
+					if (history.pushState) {
+						if (!dontPush) {
+							history.pushState(this.current, 'Slide ' + this.current, '#slide' + this.current);
+						}
+					} else {
+						window.location.hash = 'slide' + this.current;
+					}
+					for (var x = this.current-1; x < this.current + 7; x++) {
+						if (this._slides[x-4]) {
+							this._slides[x-4].setState(Math.max(0, x-this.current));
+						}
+					}
+				},
+
+				current: 0,
+				next: function() {
+					if (!this._slides[this.current-1].buildNext()) {
+						this.current = Math.min(this.current + 1, this._slides.length);
+						this._update();
+					}
+				},
+				prev: function() {
+					this.current = Math.max(this.current-1, 1);
+					this._update();
+				},
+				go: function(num) {
+					if (history.pushState && this.current != num) {
+						history.replaceState(this.current, 'Slide ' + this.current, '#slide' + this.current);
+					}
+					this.current = num;
+					this._update(true);
+				},
+
+				_notesOn: false,
+				showNotes: function() {
+					var isOn = this._notesOn = !this._notesOn;
+					query('.notes').forEach(function(el) {
+						el.style.display = (notesOn) ? 'block' : 'none';
+					});
+				},
+				switch3D: function() {
+					toggleClass(document.body, 'three-d');
+				},
+				handleWheel: function(e) {
+					var delta = 0;
+					if (e.wheelDelta) {
+						delta = e.wheelDelta/120;
+						if (isOpera) {
+							delta = -delta;
+						}
+					} else if (e.detail) {
+						delta = -e.detail/3;
+					}
+
+					if (delta > 0 ) {
+						this.prev();
+						return;
+					}
+					if (delta < 0 ) {
+						this.next();
+						return;
+					}
+				},
+				handleKeys: function(e) {
+					if (/^(input|textarea)$/i.test(e.target.nodeName) ||
+							e.target.isContentEditable) {
+						return;
+					}
+					switch (e.keyCode) {
+						case 37: // left arrow
+							this.prev(); break;
+						case 39: // right arrow
+						case 32: // space
+							this.next(); break;
+						case 50: // 2
+							this.showNotes(); break;
+						case 51: // 3
+							this.switch3D(); break;
+					}
+				},
+				_touchStartX: 0,
+				handleTouchStart: function(e) {
+					this._touchStartX = e.touches[0].pageX;
+				},
+				handleTouchEnd: function(e) {
+					var delta = this._touchStartX - e.changedTouches[0].pageX;
+					var SWIPE_SIZE = 150;
+					if (delta > SWIPE_SIZE) {
+						this.next();
+					} else if (delta< -SWIPE_SIZE) {
+						this.prev();
+					}
+				}
+			};
+
+			// Initialize
+			var slideshow = new SlideShow(query('.slide'));
+
+			var counters = document.querySelectorAll('.counter');
+			var slides = document.querySelectorAll('.slide');
+		})();
+	</script>
+</body>
+</html>
