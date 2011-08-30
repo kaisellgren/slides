@@ -1,0 +1,32 @@
+ECMAScript Series
+
+Possible split down / topics
+
+Part 1: Basics
+- What it is
+- History
+- Data types (type detection)
+- Operators
+- Comments
+- Constructs (if, while, for, for in)
+- Variable and function declarations/expressions (delete)
+- Function arguments
+
+Part 2: Objects and arrays
+- Object, Array
+- Prototypes
+- Scopes and closures (this)
+
+Part 3:
+- Regular expressions
+- Date
+- Math
+
+Part 4: DOM
+- Browser environment (DOM, BOM, JS)
+- DOM
+- Events
+
+Part 5: Timing
+- Timers
+- Event Loop
