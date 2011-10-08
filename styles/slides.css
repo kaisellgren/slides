@@ -6,6 +6,7 @@ body {
 	height: 100%;
 	position: absolute;
 	left: 0px; top: 0px;
+	background: url('../images/background.jpg');
 }
 
 [data-build] > .to-build {
@@ -23,6 +24,7 @@ th, td {
 
 h1.title {
 	font-size: 64px;
+	line-height: 64px;
 }
 
 .presentation {
@@ -33,7 +35,6 @@ h1.title {
 	top: 0px;
 	display: block;
 	overflow: hidden;
-	background: url('../images/background.jpg');
 }
 
 .slides {
@@ -85,12 +86,13 @@ h1.title {
 }
 
 .slide .counter {
-	color: #999999;
+	color: #000;
 	position: absolute;
 	left: 20px;
 	bottom: 20px;
 	display: block;
-	font-size: 70%;
+	font-size: 100%;
+	text-shadow: 1px 1px 1px #fff;
 }
 
 .slide.title > .counter,
@@ -405,5 +407,5 @@ ul.bulleted {
 	box-shadow: 0 0 32px black inset;
 	-moz-box-shadow: 0 0 32px black inset;
 	-webkit-box-shadow: 0 0 32px black inset;
-	z-index: 1;
+	z-index: 0;
 }

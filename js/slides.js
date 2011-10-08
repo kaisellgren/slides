@@ -145,8 +145,9 @@
 		},
 		_makeCounter: function() {
 			if(!this._count || !this._node) { return; }
+			var total = document.querySelectorAll('.slide').length;
 			var c = doc.createElement('span');
-			c.innerHTML = this._count;
+			c.innerHTML = this._count + ' / ' + total;
 			c.className = 'counter';
 			this._node.appendChild(c);
 		},

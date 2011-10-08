@@ -1,0 +1,279 @@
+<!DOCTYPE html> 
+<!--
+	Copyright 2010 Google Inc.
+ 
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+ 
+		 http://www.apache.org/licenses/LICENSE-2.0
+ 
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+ 
+	Original slides: Marcin Wichary (mwichary@google.com)
+	Modifications: Chrome Developer Relations <chrome-devrel@googlegroups.com>
+-->
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
+	<title>ECMAScript Series Part 2</title>
+	<link href="http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono" rel="stylesheet" type="text/css" />
+	<link href="../styles/slides.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<div class="inner-shadow"></div>
+
+	<div class="presentation">
+		<div id="presentation-counter"></div>
+		<div class="slides">
+			<div class="slide">
+				<section class="middle">
+					<h1 class="title">ECMAScript Series Part 2:<br /><br />Scopes, declarations<br />and objects</h1>
+					<p>by Kai Sellgren</p>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Execution context</h2>
+					<div data-build="data-build">
+						<p>asd</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Scope</h2>
+					<div data-build="data-build">
+						<p>Scope is an enclosing context where values and expressions are associated. The type of scope determines what kind of entities it can contain and how it affects them—or semantics.</p>
+						<p>Typically, scope is used to define the extent of information hiding. That is, the visibility or accessibility of variables from different parts of the program.</p>
+						<p>Scopes can:</p>
+						<ul>
+							<li>contain declarations or definitions of identifiers;</li>
+							<li>contain statements and/or expressions which define an executable algorithm or part thereof;</li>
+							<li>nest or be nested.</li>
+						</ul>
+						<p>Variables are associated with scopes. Different scoping rules affect how local variables are bound. This has different consequences depending on whether the language has static (lexical) or dynamic scoping.</p>
+						<p>Scopes are also often referred to as <em>environments</em>.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>ECMAScript has Lexical scoping</h2>
+					<div data-build="data-build">
+						<p>With lexical scope, a name always refers to its (more or less) local lexical environment. Because this matching only requires analysis of the static program text, this type of scoping is also called static scoping.</p>
+						<p>Static scoping allows the programmer to reason about object references such as parameters, variables, constants, types, functions, etc. as simple name substitutions. This makes it much easier to make modular code and reason about it, since the local naming structure can be understood in isolation.</p>
+						<p>In ECMAScript, every function defines a new scope. This is called function scoping.</p>
+						<p>We will possibly have block scoping in ECMAScript 6 "Harmony", but that is not sure yet.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Example use of Lexical scoping</h2>
+					<pre>
+function foo() {
+	var a = 'Hello';
+
+	function bar() {
+		var b = ' world!';
+		console.log(a + b); // Hello world!
+	}
+
+	console.log(a + b); // Hello undefined
+}
+
+foo();
+</pre>
+					<div data-build="data-build">
+						<p>There are three scopes in the above code and the function <em>bar</em> uses Lexical scoping, because in ECMAScript we have function-based scoping rules.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Scope resolution</h2>
+					<p><em>Scope resolution</em> (identifier resolution) is used for finding symbols such as variables within a <em>scope chain</em>.</p>
+					<div data-build="data-build">
+						<pre>
+var a = 1;                    <strong>Program scope:</strong>
+function foo() {               a: 1
+    var b = 2;
+    function bar() {          <strong>Function scope "foo":</strong>
+        var c = 3;             b: 2
+        c - b - a; // 0
+    }                         <strong>Function scope "bar":</strong>
+};                             c: 3
+</pre>
+						<p>When executing function <em>bar</em>, the symbol <em>a</em> is retrieved through scope resolution like so:</p>
+						<ul>
+							<li>See if <em>a</em> is defined in this (local) scope</li>
+							<ul data-build="data-build">
+								<li>Yes - use it</li>
+								<li><strong>No - see if <em>a</em> is defined in the "foo" scope.</strong></li>
+								<ul data-build="data-build">
+									<li>Yes - use it</li>
+									<li><strong>No - see if <em>a</em> is defined in the Program scope.</strong></li>
+									<ul data-build="data-build">
+										<li><strong>Yes - use it</strong></li>
+										<li>No - throw <em>ReferenceError</em></li>
+									</ul>
+								</ul>
+							</ul>
+						</ul>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>How does LexicalEnvironment work?</h2>
+					<p>During the process of parsing and compiling the program, the engine will create LexicalEnvironment objects.</p>
+					<pre>
+<em>LexicalEnvironment</em>:
+    <em>EnvironmentRecord</em> environment:
+        ...
+    <em>LexicalEnvironment</em> outer:
+        ...</pre>
+					<div data-build="data-build">
+						<p>Each <em>LexicalEnvironment</em> objects contain a reference to the outer environment, which can be a null reference.</p>
+						<p>They have a single <em>EnvironmentRecord</em> object which holds each symbol inside.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>LexicalEnvironment example</h2>
+					<pre>
+var x = 1;
+function foo() {
+    var y = 2;
+}</pre>
+					<pre>
+<em>LexicalEnvironment</em> programScope:
+    <em>EnvironmentRecord</em> environment:
+        // "Built-in features" in global scope
+        Date: function() {}
+        Array: function() {}
+        ...
+        x: 1
+    <em>LexicalEnvironment</em> outer: null</pre>
+					<pre>
+<em>LexicalEnvironment</em> fooScope:
+    <em>EnvironmentRecord</em> environment:
+        y: 2
+    <em>LexicalEnvironment</em> outer: programScope</pre>
+					<p><em>LexicalEnvironment</em> objects are used in scope/identifier resolution. All this forms a so-called <em>scope chain</em>.</p>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Types of EnvironmentRecord</h2>
+					<p>There are two types of <em>EnvironmentRecord</em>. First is the <em>declarative environment record</em>, which holds variables, functions, formal parameters and such.</p>
+					<div data-build="data-build">
+						<p>These declarative records can be very efficient and are often stored low level in the registers of virtual machines. They are created with several optimizations such as completely
+						omitting unnecessary symbols.</p>
+						<img src="withoutEval.png" />
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Drawbacks of using <em>eval</em></h2>
+					<p>One of the several drawbacks to using <em>eval</em> is its inefficiency. Declarative records can no longer be efficient, because the underlying engine has no idea what is going to happen when <em>eval</em> is used.</p>
+					<div data-build="data-build">
+						<img src="withEval.png" />
+						<p>The term <em>Closure</em> seen in the above screenshot is the parent environment. The parent environment is "closed up" with the current context, hence it's called a Closure.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Object environment records</h2>
+					<p>The other type of <em>EnvironmentRecord</em> in contrast to the <em>declarative environment record</em> is called the <em>object environment record</em>.</p>
+					<div data-build="data-build">
+						<p>It is used for the global scope (and also for <em>with</em> statements).</p>
+						<pre>
+var a = 10;
+console.log(a); // 10
+
+// "this" in the global context is the global object itself.
+console.log(this.a); // 10
+
+// "window" is the reference to the global object in the browser environment.
+console.log(window.a); // 10</pre>
+						<p>Removing the global object from the bottom of the scope chain is planned for the ES.next. That is, the global environment record will be also declarative.</p>
+						<p>With a system of planned modules, global bindings such as parseInt, Math, etc. will just be imported to the global context. We won’t be able to refer global variables as properties of the global object anymore, since there will be no any global object.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Closures</h2>
+					<blockquote>"A closure is a combination of a code block and data of a context in which this code block is created."</blockquote>
+					<pre>
+var x = 10;
+
+function foo() {
+  console.log(x);
+}
+
+(function (f) {
+  var x = 20;
+
+  // The variable "x" for "f" is saved statically from the (lexical) context,
+  // in which it was created.
+  f(); // 10, but not 20
+})(foo);
+					</pre>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Using Lexical scoping cleverly</h2>
+					<pre>
+function makeGreeter(name) {
+    return function() {
+        return "Hello " + name + "!";
+    }
+}
+
+var jackGreeter = makeGreeter('Jack');
+var bauerGreeter = makeGreeter('Bauer');
+
+jackGreeter(); // Hello Jack!
+bauerGreeter(); // Hello Bauer!</pre>
+				</section>
+			</div>
+
+			
+
+			<div class="slide">
+				<section class="middle">
+					<h1>Questions?</h1>
+				</section>
+			</div>
+
+		</div> <!-- slides -->
+
+	</div> <!-- presentation -->
+
+	<script src="../js/slides.js">	</script>
+</body>
+</html>
