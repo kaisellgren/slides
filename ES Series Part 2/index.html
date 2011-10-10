@@ -24,6 +24,11 @@
 	<title>ECMAScript Series Part 2</title>
 	<link href="http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono" rel="stylesheet" type="text/css" />
 	<link href="../styles/slides.css" rel="stylesheet" type="text/css" />
+	<style>
+		body {
+			background: url('../images/background2.jpg');
+		}
+	</style>
 </head>
 <body>
 	<div class="inner-shadow"></div>
@@ -33,17 +38,14 @@
 		<div class="slides">
 			<div class="slide">
 				<section class="middle">
-					<h1 class="title">ECMAScript Series Part 2:<br /><br />Scopes, declarations<br />and objects</h1>
+					<h1 class="title">ECMAScript Series Part 2:<br /><br />Scopes and declarations</h1>
 					<p>by Kai Sellgren</p>
 				</section>
 			</div>
 
 			<div class="slide">
-				<section>
-					<h2>Execution context</h2>
-					<div data-build="data-build">
-						<p>asd</p>
-					</div>
+				<section class="middle">
+					<h1 class="title">Scopes</h1>
 				</section>
 			</div>
 
@@ -51,7 +53,7 @@
 				<section>
 					<h2>Scope</h2>
 					<div data-build="data-build">
-						<p>Scope is an enclosing context where values and expressions are associated. The type of scope determines what kind of entities it can contain and how it affects them—or semantics.</p>
+						<blockquote>"Scope is an enclosing context where values and expressions are associated. The type of scope determines what kind of entities it can contain and how it affects them—or semantics." -- Wikipedia</blockquote>
 						<p>Typically, scope is used to define the extent of information hiding. That is, the visibility or accessibility of variables from different parts of the program.</p>
 						<p>Scopes can:</p>
 						<ul>
@@ -138,7 +140,7 @@ function foo() {               a: 1
 			<div class="slide">
 				<section>
 					<h2>How does LexicalEnvironment work?</h2>
-					<p>During the process of parsing and compiling the program, the engine will create LexicalEnvironment objects.</p>
+					<p>During the process of parsing and compiling the program, the engine will create LexicalEnvironment objects that are stored in functions' [[Scope]] property.</p>
 					<pre>
 <em>LexicalEnvironment</em>:
     <em>EnvironmentRecord</em> environment:
@@ -246,7 +248,7 @@ function foo() {
 
 			<div class="slide">
 				<section>
-					<h2>Using Lexical scoping cleverly</h2>
+					<h2>Using Closures (and Lexical scoping thereof) cleverly</h2>
 					<pre>
 function makeGreeter(name) {
     return function() {
@@ -259,10 +261,266 @@ var bauerGreeter = makeGreeter('Bauer');
 
 jackGreeter(); // Hello Jack!
 bauerGreeter(); // Hello Bauer!</pre>
+					<div data-build="data-build">
+						<p>The inner anonymous function has become a closure, and "closes up" the scope of the outer function <em>makeGreeter</em> who has the argument <em>name</em> in its scope.</p>
+						<p>The <em>name</em> argument is fetched from <em>makeGreeter</em>'s scope via scope resolution and since ECMAScript has Lexical scoping, it will succeed.</p>
+					</div>
 				</section>
 			</div>
 
-			
+			<div class="slide">
+				<section>
+					<h2>The notorious closure loop</h2>
+					<p>This is the mistake that every JavaScript fella commits:</p>
+					<pre>
+var functions = [];
+for (var i = 0; i < 10; i++) {
+    functions.push(function() {
+        return i;
+    });
+}
+
+functions.forEach(function(f) {
+    console.log(f());
+});</pre>
+					<div data-build="data-build">
+						<p>The above code outputs <em>10</em> exactly ten times, because the functions stored in <em>functions</em> array are closures.</p>
+						<pre>
+for (var i = 0; i < 10; i++) {
+    !function(i) {
+        functions.push(function() {
+            return i;
+        });
+    }(i);
+}</pre>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Block-scoped bindings</h2>
+					<p>The upcoming ECMAScript 6 "Harmony" edition will likely feature block-scoped bindings:</p>
+					<pre>
+{
+    let x = 5;
+    const y = 10;
+
+    console.log(x, y); // 5 and 10
+}
+
+console.log(x, y); // undefined and undefined</pre>
+					<div data-build="data-build">
+						<p>There's also a plan for adding block-scoped functions, but the syntax has not been decided yet.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section class="middle">
+					<h1 class="title">Declarations</h1>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Declarations</h2>
+					<p>Declarations are statements that declare a symbol. Declared symbols have the value of <em>undefined</em> initially.</p>
+					<div data-build="data-build">
+						<p>Declaring variables is as easy as:</p>
+						<pre>
+var name = "Jack";</pre>
+						<p>Even though you can define a global variable by leaving the <em>var</em> keyword, the variable will not be declared.</p>
+						<p>ECMAScript syntax intentionally resembles Java syntax and the syntax is relaxed to enable it to serve as an easy-to-use scripting language. For example, a variable is not required to have its type declared nor are types associated with properties, and defined functions are not required to have their declarations appear textually before calls to them.</p>
+						<pre>
+foo();
+function foo() {
+    console.log('foo!');
+}</pre>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Hoisting</h2>
+					<div data-build="data-build">
+						<p>Declarations are said to "hoist" which means that they are defined before entering a new context and executing your code.</p>
+						<p>At times this may cause weird problems:</p>
+						<pre>
+var confirm = confirm('Are you sure?'); // TypeError: undefined is not a function
+if (confirm) {
+    // Do something...
+}						</pre>
+						<p>In the above code, one might expect it to pop up a dialog with yes-no buttons. However, due to hoisting, the actual variable declaration is defined before your code gets executed like so:</p>
+						<pre>
+var confirm;
+confirm = confirm('Are you sure?');
+if (confirm) {
+    // Do something...
+}						</pre>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Hoisting cont'd.</h2>
+					<div data-build="data-build">
+						<p>One way to solve this issue is to avoid name clash:</p>
+						<pre>
+var c = confirm('Are you sure?');
+if (c) {
+    // Do something...
+}						</pre>
+						<p>Or refer to the function via <em>window</em>:</p>
+						<pre>
+var confirm;
+confirm = window.confirm('Are you sure?');
+if (confirm) {
+    // Do something...
+}						</pre>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Hoisting cont'd.</h2>
+					<div data-build="data-build">
+						<p>Because of hoisting, it does not matter if you declare a variable all over again in loops:</p>
+						<pre>
+for (var i = 0; i < 10; i++) {
+    var b = i * i;
+}			</pre>
+						<p>After all, the above code is executed as:</p>
+						<pre>
+var b;
+for (var i = 0; i < 10; i++) {
+    b = i * i;
+}						</pre>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Hoisting cont'd.</h2>
+					<div data-build="data-build">
+						<p>Hoisting happens per scope as scopes define what symbols are available to us. It is applied during compilation time. Whether the engine compiles to native machine code or some bytecode, hoisting will occur before any of your code is run.</p>
+						<p>It should be mentioned that hoisting process makes sure there is only one-time declaration of a symbol, never many:</p>
+						<pre>
+<em>Your code</em>                           <em>What engine does</em>
+var a;                              var a;
+console.log(a); // undefined        console.log(a);
+a = 1;                              a = 1;
+console.log(a); // 1                console.log(a);
+var a;
+console.log(a); // 1                console.log(a);</pre>
+						<p>The initial value of a declared symbol is <em>undefined</em>. However, hoisting makes it impossible to redeclare a symbol.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Always use <em>var</em> for variables</h2>
+					<div data-build="data-build">
+						<p>It is important to use the <em>var</em> keyword when declaring variables. Without it, variables end up created in the global scope, undeclared, as an object property.</p>
+						<pre>
+console.log(typeof a); // undefined
+function foo() {
+    a = 1;
+}
+foo();
+console.log(typeof a); // "Number"</pre>
+						<p>Declared variables go through hoisting process, which sets a [[DontDelete]] flag for them:</p>
+						<pre>
+<em>Your code</em>                 <em>EnvironmentRecord</em>
+function foo() {              bar: {
+    var bar = 5;                  value: 5
+}                                 DontDelete: true
+foo();                        }</pre>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Inspecting [[DontDelete]]</h2>
+					<div data-build="data-build">
+						<p>We can inspect this behavior of setting [[DontDelete] flag easily.</p>
+						<pre>
+function foo() {                 function foo() {
+    var a = 1;                       a = 1;
+    console.log(a); // 1             console.log(a); // 1
+    delete a;                        delete a;
+    console.log(a); // 1             console.log(a); // ReferenceError: a is not
+}                                }                                      defined
+foo();                           foo();</pre>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Most ECMAScript/JavaScript books are crap</h2>
+					<p>The real concepts behind ECMAScript are not always straight-forward. Even the popular JavaScript book "Object-Oriented JavaScript" got some parts wrong.</p>
+					<img src="oojs.jpg" style="display: table; margin: 0 auto;" />
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Declaration confusion</h2>
+					<blockquote>"function is treated as a normal variable—it can be copied to a different variable and even deleted." -- Object-Oriented JavaScript</blockquote>
+					<div data-build="data-build">
+						<p>WRONG!</p>
+						<p>The book even continues and provides a code snippet:</p>
+						<pre>
+>>> var sum = function(a, b) {return a + b;}
+>>> var add = sum;
+>>> delete sum
+true
+>>> typeof sum;
+"undefined"</pre>
+						<p>However, as we learned before, variable declarations end up hoisted and get a [[DontDelete]] flag set. Therefore, the above code snippet should be anything, but right.</p>
+						<p>Before we can understand what is going on, we need to take a look at <em>eval</em>.</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Declarations and <em>eval</em></h2>
+					<p>Variables declared within <em>eval</em> code are created as properties of calling context's Variable object. Therefore, they do not receive this [[DontDelete]] attribute.</p>
+					<div data-build="data-build">
+						<pre>
+function foo() {
+    eval('var bar = 5');
+    console.log(bar); // 5
+    delete bar;
+    console.log(typeof bar); // "undefined"
+}
+foo();</pre>
+						<p>As seen above, evaluated code containing variable declarations will not set [[DontDelete]] attributes. So, why did the book claim the opposite?</p>
+					</div>
+				</section>
+			</div>
+
+			<div class="slide">
+				<section>
+					<h2>Firebug's behavior</h2>
+					<div data-build="data-build">
+						<p>Interestingly, as we look into Firebug's source code, we see this in <em>commandLine.js</em>:</p>
+						<pre>
+Components.utils.evalInSandbox(scriptToEval, sandbox);</pre>
+						<p>The method <em>evalInSandbox</em> is an internal method and it does just what it says, runs an evaluation.</p>
+						<p>As we remember from before, evaluation can affect the behavior of code as it does in this case.</p>
+						<p>This leads me to believe that Stoyan Stefanov, the author of "Object-Oriented JavaScript", has used Firebug to test his code. Since Firebug evaluates the given code, the behavior might be different than what one might expect.</p>
+					</div>
+				</section>
+			</div>
 
 			<div class="slide">
 				<section class="middle">

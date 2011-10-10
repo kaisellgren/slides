@@ -60,9 +60,9 @@ h1.title {
 	top: 50%;
 	margin-top: -375px;
 	opacity: 0.15;
-	background: radial-gradient(center center , #FFFFFF, rgba(255, 255, 255, 0.4)) repeat scroll 0 0 transparent;
-	background: -moz-radial-gradient(center center , #FFFFFF, rgba(255, 255, 255, 0.4)) repeat scroll 0 0 transparent;
-	background: -webkit-radial-gradient(center center , #FFFFFF, rgba(255, 255, 255, 0.4)) repeat scroll 0 0 transparent;
+	background: radial-gradient(center center , #FFFFFF, rgba(255, 255, 255, 0.4) 75%, rgba(255, 255, 255, 0.1)) repeat scroll 0 0 transparent;
+	background: -moz-radial-gradient(center center , #FFFFFF, rgba(255, 255, 255, 0.4) 75%, rgba(255, 255, 255, 0.1)) repeat scroll 0 0 transparent;
+	background: -webkit-radial-gradient(center center , #FFFFFF, rgba(255, 255, 255, 0.4) 75%, rgba(255, 255, 255, 0.1)) repeat scroll 0 0 transparent;
 	-webkit-transition: all 0.25s ease-in-out;
 	-moz-transition: all 0.25s ease-in-out;
 	-o-transition: all 0.25s ease-in-out;
@@ -92,7 +92,7 @@ h1.title {
 	bottom: 20px;
 	display: block;
 	font-size: 100%;
-	text-shadow: 1px 1px 1px #fff;
+	text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
 }
 
 .slide.title > .counter,
@@ -186,7 +186,7 @@ section, footer {
 	font-family: 'Droid Sans';
 	color: #3f3f3f;
 	text-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
-	margin: 100px 30px 0;
+	margin: 70px 30px 0;
 	display: block;
 	overflow: hidden;
 }
