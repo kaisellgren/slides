@@ -375,8 +375,7 @@ if (c) {
 }						</pre>
 						<p>Or refer to the function via <em>window</em>:</p>
 						<pre>
-var confirm;
-confirm = window.confirm('Are you sure?');
+var confirm = window.confirm('Are you sure?');
 if (confirm) {
     // Do something...
 }						</pre>
@@ -449,7 +448,7 @@ foo();                        }</pre>
 				<section>
 					<h2>Inspecting [[DontDelete]]</h2>
 					<div data-build="data-build">
-						<p>We can inspect this behavior of setting [[DontDelete] flag easily.</p>
+						<p>We can inspect this behavior of setting [[DontDelete]] flag easily.</p>
 						<pre>
 function foo() {                 function foo() {
     var a = 1;                       a = 1;
